@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce/widgets/fetchProducts.dart';
 
 class Favourite extends StatefulWidget {
   @override
@@ -9,7 +10,9 @@ class _FavouriteState extends State<Favourite> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.red,
+      body: SafeArea(
+        child: fetchData("users-favourite-items"),
+      ),
     );
   }
 }

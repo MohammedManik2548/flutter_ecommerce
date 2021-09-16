@@ -6,6 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce/const/AppColors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../product_details_screen.dart';
+import '../search_screen.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -17,7 +19,6 @@ class _HomeState extends State<Home> {
   var _dotPosition = 0;
   List _products = [];
   var _firestoreInstance = FirebaseFirestore.instance;
-  TextEditingController _searchController = TextEditingController();
 
   fetchCarouselImages() async {
     QuerySnapshot qn =
@@ -66,44 +67,21 @@ class _HomeState extends State<Home> {
           children: [
             Padding(
               padding: EdgeInsets.only(left: 20.w, right: 20.w),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 60.h,
-                      child: TextFormField(
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          fillColor: Colors.white,
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(0)),
-                              borderSide: BorderSide(color: Colors.blue)),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(0)),
-                              borderSide: BorderSide(color: Colors.grey)),
-                          hintText: "Search products here",
-                          hintStyle: TextStyle(fontSize: 15.sp),
-                        ),
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    child: Container(
-                      height: 60.h,
-                      width: 60.h,
-                      color: AppColors.deep_orange,
-                      child: Center(
-                        child: Icon(
-                          Icons.search,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    onTap: () {},
-                  )
-                ],
+              child: TextFormField(
+                readOnly: true,
+                decoration: InputDecoration(
+                  fillColor: Colors.white,
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(0)),
+                      borderSide: BorderSide(color: Colors.blue)),
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(0)),
+                      borderSide: BorderSide(color: Colors.grey)),
+                  hintText: "Search products here",
+                  hintStyle: TextStyle(fontSize: 15.sp),
+                ),
+                onTap: () => Navigator.push(context,
+                    CupertinoPageRoute(builder: (_) => SearchScreen())),
               ),
             ),
             SizedBox(
@@ -154,37 +132,47 @@ class _HomeState extends State<Home> {
             ),
             Expanded(
               child: GridView.builder(
-                  scrollDirection: Axis.horizontal,
+                  scrollDirection: Axis.vertical,
                   itemCount: _products.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2, childAspectRatio: 1),
                   itemBuilder: (_, index) {
-                    return Card(
-                      elevation: 3,
-                      child: Column(
-                        children: [
-                          AspectRatio(
-                              aspectRatio: 2,
-                              child: Expanded(
+                    return GestureDetector(
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) =>
+                                  ProductDetails(_products[index]))),
+                      child: Card(
+                        elevation: 3,
+                        child: Column(
+                          children: [
+                            AspectRatio(
+                                aspectRatio: 2,
                                 child: Container(
-                                  height: 72,
-                                  width: 72,
-                                  color: Colors.white,
-                                  child: Image.network(
-                                    _products[index]["product-img"][0],
-                                    height: 72,
-                                    width: 200,
-                                  ),
-                                ),
-                              )),
-                          Text("${_products[index]["product-name"]}"),
-                          Text(
-                              "${_products[index]["product-price"].toString()}"),
-                        ],
+                                    color: Colors.white,
+                                    child: Image.network(
+                                      _products[index]["product-img"][0],
+                                    ))),
+                            Text(
+                              "${_products[index]["product-name"]}",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                            Text(
+                              "${_products[index]["product-price"].toString()}",
+                              style: TextStyle(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   }),
-            )
+            ),
           ],
         ),
       )),
